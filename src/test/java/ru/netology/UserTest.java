@@ -1,20 +1,17 @@
 package ru.netology;
 
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Condition.*;
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selenide.$;
-import static java.time.Duration.ofSeconds;
+import static com.codeborne.selenide.Selectors.byText;
 
 public class UserTest {
-
-    SelenideElement success = $x("//div[@data-test-id='success-notification']");
-    SelenideElement reschedule = $x("//div[@data-test-id='reschedule-notification']");
-    SelenideElement error = $x("//div[@data-test-id='error-notification']");
 
     @BeforeEach
     public void setUp() {
@@ -24,33 +21,29 @@ public class UserTest {
     @Test
     public void happyPath() {
 
-        UserData user = UserGenerator.generateUser(4);
+        Info user = UserGenerator.generateUser();
 
         $("[data-test-id='city'] input").val(user.getCity());
-        $x(".//span[@data-test-id='date']//input[@class='input__control']").val(user.getDate());
+        $("[data-test-id='date'] input[class='input__control']").
+                sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input[class='input__control']").setValue(UserGenerator.generateDate(5));
         $("[data-test-id='name'] input").val(user.getName());
         $("[data-test-id='phone'] input").val(user.getPhone());
         $x(".//label[@data-test-id='agreement']").click();
-        $x(".//button//ancector::span[contains(text(),'Запланировать')]").click();
+        $(byText("Запланировать")).click();
 
-        success.should(visible, ofSeconds(15));
-        success.$x(".//div[@class='notification__content']").should(text("Встреча успешно забронирована на " +
-                user.getDate()));
-        success.$x(".//button").click();
-        success.should(hidden);
-
-        $x(".//span[@data-test-id='date']//input[@class='input__control']").
-                val(UserGenerator.generateDate(2));
-        $x(".//button//ancector::span[contains(text(),'Запланировать')]").click();
-
-        reschedule.should(visible, ofSeconds(15));
-        reschedule.$x(".//span[contains(text(),'Перепланировать')]//ancector::button").click();
-        success.should(hidden);
-
-        success.should(visible, ofSeconds(15));
-        success.$x(".//div[@class='notification__content']").should(text("Встреча успешно забронирована на " +
-                UserGenerator.generateDate(2)));
-        success.$x(".//button").click();
-        success.should(hidden);
+        $("[data-test-id='success-notification'] div[class='notification__content']").
+                shouldBe(visible, Duration.ofSeconds(15)).should(text("Встреча успешно запланирована на " +
+                        UserGenerator.generateDate(5)));
+        $(byText("Запланировать")).click();
+        $("[data-test-id='date'] input[class='input__control']").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id='date'] input[class='input__control']").sendKeys(Keys.DELETE);
+        $("[data-test-id='date'] input[class='input__control']").setValue(UserGenerator.generateDate(8));
+        $(byText("Запланировать")).click();
+        $("[data-test-id='replan-notification']"). shouldBe(visible, Duration.ofSeconds(15));
+        $x(".//span[contains(text(),'Перепланировать')]//ansector::button").click();
+        $("[data-test-id='success-notification'] div[class='notification__content']").
+                shouldBe(visible, Duration.ofSeconds(15)).should(text("Встреча успешно запланирована на " +
+                        UserGenerator.generateDate(8)));
     }
 }

@@ -8,39 +8,27 @@ import java.util.Locale;
 
 public class UserGenerator {
 
-    public static UserData generateUser(int newDay) {
+    public static Info generateUser() {
 
         String city = generateCity();
-        String date = generateDate(newDay);
         String name = generateName();
         String phone = generatePhone();
-        UserData user = new UserData(city, date, name, phone);
+        Info user = new Info(city, name, phone);
         return user;
+    }
+
+    public static String generateDate(int changeDay) {
+
+        String date = LocalDate.now().plusDays(changeDay).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return date;
+
     }
 
     public static String generateCity() {
 
-        String[] cities = new String[]{"Майкоп", "Горно-Алтайск", "Уфа", "Улан-Удэ", "Махачкала", "Магас", "Нальчик",
-                "Элиста", "Черкесск", "Петрозаводск", "Сыктывкар", "Симферополь", "Йошкар-Ола", "Саранск", "Якутск",
-                "Владикавказ", "Казань", "Кызыл", "Ижевск", "Абакан", "Грозный", "Чебоксары", "Барнаул", "Чита",
-                "Петропавловск-Камчатский", "Краснодар", "Красноярск", "Пермь", "Владивосток", "Ставрополь", "Хабаровск",
-                "Благовещенск", "Архангельск", "Астрахань", "Белгород", "Брянск", "Владимир", "Волгоград", "Вологда",
-                "Воронеж", "Иваново", "Иркутск", "Калининград", "Калуга", "Кемерово", "Киров", "Кострома", "Курган",
-                "Курск", "Гатчина", "Липецк", "Магадан", "Красногорск", "Мурманск", "Нижний Новгород",
-                "Великий Новгород", "Новосибирск", "Омск", "Оренбург", "Орёл", "Пенза", "Псков", "Ростов-на-Дону",
-                "Рязань", "Самара", "Саратов", "Южно-Сахалинск", "Екатеринбург", "Смоленск", "Тамбов", "Тверь", "Томск",
-                "Тула", "Тюмень", "Ульяновск", "Челябинск", "Ярославль", "Москва", "Санкт-Петербург", "Севастополь",
-                "Биробиджан", "Нарьян-Мар", "Ханты-Мансийск", "Анадырь", "Салехард"};
-        Faker faker = new Faker();
-        int i = faker.number().numberBetween(0, cities.length - 1);
-        String city = cities[i];
+        Faker faker = new Faker(new Locale("ru"));
+        String city = faker.address().city();
         return city;
-    }
-
-    static String generateDate(int newDays) {
-
-        String meetDate = LocalDate.now().plusDays(newDays).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        return meetDate;
     }
 
     public static String generateName() {
