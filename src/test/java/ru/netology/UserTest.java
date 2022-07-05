@@ -41,7 +41,7 @@ public class UserTest {
         $("[data-test-id='date'] input[class='input__control']").setValue(UserGenerator.generateDate(8));
         $(byText("Запланировать")).click();
         $("[data-test-id='replan-notification']"). shouldBe(visible, Duration.ofSeconds(15));
-        $x(".//span[contains(text(),'Перепланировать')]//ansector::button").click();
+        $(byText("Перепланировать")).click();
         $("[data-test-id='success-notification'] div[class='notification__content']").
                 shouldBe(visible, Duration.ofSeconds(15)).should(text("Встреча успешно запланирована на " +
                         UserGenerator.generateDate(8)));
